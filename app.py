@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 from function import getTime, checkRarity, getRandomNum, randomResetCode
 
-from flask import Flask, abort, request
+from flask import Flask, abort, request, jsonify
 from linebot.v3.webhook import (
     WebhookHandler
 )
@@ -266,6 +266,51 @@ def handle_message(event):
 @app.route('/', methods=['GET'])
 def toppage():
 	return 'Hello world!'
+
+@app.route('/api/get_answers', methods=['GET'])
+def get_info():
+    conn = sqlite3.connect('quiz.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM answers")
+    data = c.fetchall()
+    conn.close()
+    return jsonify(data)
+
+@app.route('/api/get_users', methods=['GET'])
+def get_users():
+    conn = sqlite3.connect('quiz.db')
+    c = conn.cursor()
+    c.execute("SELECT * FROM users")
+    data = c.fetchall()
+    conn.close()
+    return jsonify(data)
+
+@app.route('/api/get_reset_code', methods=['GET'])
+def get_reset_code():
+    conn = sqlite3.connect('quiz.db')
+    c = conn.cursor()
+    c.execute("SELECT reset_code FROM reset_codes")
+    reset_code = c.fetchone()[0]
+    conn.close()
+    return jsonify(reset_code)
+
+@app.route('/api/change_all_show_flag', methods=['GET'])
+def change_all_show_flag():
+    conn = sqlite3.connect('quiz.db')
+    c = conn.cursor()
+    c.execute("UPDATE answers SET show_flag = 1")
+    conn.commit()
+    conn.close()
+    return 'show_flagを全て1にしました'
+
+@app.route('/api/change_all_answer_flag', methods=['GET'])
+def change_all_answer_flag():
+    conn = sqlite3.connect('quiz.db')
+    c = conn.cursor()
+    c.execute("UPDATE answers SET answer_flag = 1")
+    conn.commit()
+    conn.close()
+    return 'answer_flagを全て1にしました'
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))
