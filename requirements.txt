@@ -46,6 +46,7 @@ cryptography==37.0.4
 cssselect==1.2.0
 cx-Freeze==6.3
 cycler==0.11.0
+Cython==0.29.37
 debugpy==1.6.3
 decorator==4.4.2
 defusedxml==0.7.1
@@ -57,6 +58,7 @@ distlib==0.3.6
 dnspython==2.2.1
 docker==6.0.1
 docutils==0.17.1
+docx==0.2.4
 duckduckgo-search==2.8.6
 entrypoints==0.4
 et-xmlfile==1.1.0
@@ -371,6 +373,7 @@ pytest-cov==4.0.0
 pytest-integration==0.2.3
 pytest-mock==3.10.0
 python-dateutil==2.8.2
+python-docx==1.1.0
 python-dotenv==1.0.0
 python-multipart==0.0.5
 pyttsx3==2.90
