@@ -262,6 +262,10 @@ def handle_message(event):
                 )
             )
 
+## 起動確認用ウェブサイトのトップページ
+@app.route('/', methods=['GET'])
+def toppage():
+	return 'Hello world!'
 
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))
