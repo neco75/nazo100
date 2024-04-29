@@ -312,6 +312,24 @@ def change_all_answer_flag():
     conn.close()
     return 'answer_flagを全て1にしました'
 
+@app.route('/api/get_filtered_ids', methods=['GET'])
+def get_filtered_ids():
+    conn = sqlite3.connect('quiz.db')
+    c = conn.cursor()
+
+    # 'show_flag' が 1 であるもののIDリストを取得
+    c.execute("SELECT id FROM answers WHERE show_flag = 1")
+    show_flag_ids = [row[0] for row in c.fetchall()]
+
+    # 'answer_flag' が 1 であるもののIDリストを取得
+    c.execute("SELECT id FROM answers WHERE answer_flag = 1")
+    answer_flag_ids = [row[0] for row in c.fetchall()]
+
+    conn.close()
+
+    return jsonify({"show_flag_ids": show_flag_ids, "answer_flag_ids": answer_flag_ids})
+
+
 if __name__ == "__main__":
     port = int(os.getenv("PORT", 8000))
     app.run(host="0.0.0.0", port=port, debug=False)
