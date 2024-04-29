@@ -1,9 +1,12 @@
 from datetime import datetime
 import random
 import string
+import pytz
+
 
 def getTime() :
-    current_time = datetime.now().strftime("%H%M")
+    japan_tz = pytz.timezone('Asia/Tokyo')
+    current_time = datetime.now(japan_tz).strftime("%H%M")
     return current_time
 
 def checkRarity(hhmm) :
