@@ -38,3 +38,21 @@ def randomResetCode() :
     resetCode = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
     print(f'resetCode = {resetCode}')
     return resetCode
+
+def getImageRarity(id):
+    if id < 26:
+        return 0
+    elif id < 51:
+        return 1
+    elif id < 71:
+        return 2
+    elif id < 81:
+        return 3
+    elif id < 91:
+        return 4
+    elif id < 99:
+        return 5
+    elif id < 101:
+        return 6
+    else:
+        return -1
