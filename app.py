@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 from function import getTime, checkRarity, getRandomNum, randomResetCode,getImageRarity
 
-from flask import Flask, abort, request, jsonify
+from flask import Flask, abort, request, jsonify, url_for
 from linebot.v3.webhook import (
     WebhookHandler
 )
@@ -24,7 +24,7 @@ from linebot.v3.webhooks import (
     MessageEvent,
     TextMessageContent
 )
-app = Flask(__name__)
+app = Flask(__name__,static_folder="./static/")
 
 load_dotenv()
 # WebhookHandler のトークンを環境変数から取得
@@ -151,12 +151,14 @@ def handle_message(event):
                         # answersテーブルからid:imageNumのレコードを取得,show_flagが0の場合はshow_flagを1に更新
                         c.execute("SELECT * FROM answers WHERE id = ? AND show_flag = 0", (imageNum,))
                         answer = c.fetchone()
+                        c.execute("SELECT image_name FROM answers WHERE id = ?", (imageNum,))
+                        imageName = c.fetchone()
+                        imageName = imageName[0]
                         if answer:
                             c.execute("UPDATE answers SET show_flag = 1 WHERE id = ?", (imageNum,))
                         conn.commit()
                     
                     conn.close()
-
                     if rarity is not None and imageNum is not None:
                         line_bot_api = MessagingApi(api_client)
                         line_bot_api.reply_message_with_http_info(
@@ -166,8 +168,8 @@ def handle_message(event):
                                     TextMessage(text=msg),
                                     ImageMessage(
                                         type='image',
-                                        original_content_url=f'https://nazo100bot-site.vercel.app/img/{str(rarity)}/{str(imageNum)}.png',
-                                        preview_image_url=f'https://nazo100bot-site.vercel.app/img/{str(rarity)}/{str(imageNum)}.png'
+                                        original_content_url=f'https://nazo100bot-site.vercel.app/img/quiz/{imageName}',
+                                        preview_image_url=f'https://nazo100bot-site.vercel.app/img/quiz/{imageName}'
                                     )
                                 ]
                             )
@@ -271,6 +273,9 @@ def handle_message(event):
                     c = conn.cursor()
                     c.execute("SELECT show_flag FROM answers WHERE id = ?", (show_id,))
                     show_flag = c.fetchone()[0]
+                    c.execute("SELECT image_name FROM answers WHERE id = ?", (show_id,))
+                    imageName = c.fetchone()
+                    imageName = imageName[0]
                     conn.close()
                     showed_rarity = getImageRarity(int(show_id))
                     if(showed_rarity == -1):
@@ -283,8 +288,8 @@ def handle_message(event):
                                 messages=[
                                     ImageMessage(
                                         type='image',
-                                        original_content_url=f'https://nazo100bot-site.vercel.app/img/{showed_rarity}/{show_id}.png',
-                                        preview_image_url=f'https://nazo100bot-site.vercel.app/img/{showed_rarity}/{show_id}.png'
+                                        original_content_url=f'https://nazo100bot-site.vercel.app/img/quiz/{imageName}',
+                                        preview_image_url=f'https://nazo100bot-site.vercel.app/img/quiz/{imageName}'
                                     )
                                 ]
                             )
@@ -388,14 +393,14 @@ def change_all_answer_flag():
     conn.close()
     return 'answer_flagを全て1にしました'
 
-@app.route('/api/get_filtered_ids', methods=['GET'])
+@app.route('/api/get_filtered_item', methods=['GET'])
 def get_filtered_ids():
     conn = sqlite3.connect('quiz.db')
     c = conn.cursor()
 
-    # 'show_flag' が 1 であるもののIDリストを取得
-    c.execute("SELECT id FROM answers WHERE show_flag = 1")
-    show_flag_ids = [row[0] for row in c.fetchall()]
+    # 'show_flag' が 1 であるもののリストを取得
+    c.execute("SELECT * FROM answers WHERE show_flag = 1")
+    show_flag_item = c.fetchall()
 
     # 'answer_flag' が 1 であるもののIDリストを取得
     c.execute("SELECT id FROM answers WHERE answer_flag = 1")
@@ -403,7 +408,7 @@ def get_filtered_ids():
 
     conn.close()
 
-    return jsonify({"show_flag_ids": show_flag_ids, "answer_flag_ids": answer_flag_ids})
+    return jsonify({"show_flag_item": show_flag_item, "answer_flag_ids": answer_flag_ids})
 
 # show_{id} で指定されたIDの 'show_flag' を 1 にする
 # url例　http://localhost:8000/api/change_show_flag/1
