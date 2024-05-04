@@ -241,7 +241,7 @@ def handle_message(event):
             elif event.message.text == 'その他':
                 msg = ''
                 msg = 'このコンテンツは「Project:;COLD 2.0 ALTÆR CARNIVAL」二次利用ガイドラインに沿って公開をしています。\n\n'
-                msg += '◆二次利用元：\n[二次利用元の対象コンテンツのURLを入力・複数でも可]\n\n'
+                msg += '◆二次利用元：\nHighConsciousLab：https://highconsciouslab.com/100-questions/\n\n'
                 msg += '◆「Project:;COLD 2.0 ALTÆR CARNIVAL」関連情報：\n'
                 msg += '公式サイト：https://bit.ly/3u5BYM3\n'
                 msg += 'YouTube：https://bit.ly/5YuuN42\n'
@@ -316,6 +316,35 @@ def handle_message(event):
                             ]
                         )
                     )
+            
+            elif event.message.text == 'help':
+                msg = (
+                    "現在対応しているコマンド\n\n"
+                    "[ドロー]\n"
+                    "問題を取得できます。1時間に1度ドロー可能です。\n\n"
+                    "[{問題番号}-{答え}]\n"
+                    "答えがわかった場合1-hogeのように答えてください。回答は何度でも可能です。"
+                    "問題が公開されていない(誰にもドローされていない)場合、正解だとしても不正解扱いです。\n\n"
+                    "[#{問題番号}]\n"
+                    "既に公開されている問題番号の場合、その問題の画像を見ることができます。\n\n"
+                    "[情報]\n"
+                    "現在公開されている問題と正解された問題の番号を見ることができます。\n\n"
+                    "[{クリアコード}]\n"
+                    "すべての謎が解かれるとクリアコードが開示されます。それを入力するとゲームクリアです。\n\n"
+                    "[help]\n"
+                    "このヘルプを表示します。\n\n"
+                    "[その他]\n"
+                    "このBOTの元となったコンテンツのクレジットです。"
+                )
+                line_bot_api = MessagingApi(api_client)
+                line_bot_api.reply_message_with_http_info(
+                    ReplyMessageRequest(
+                        reply_token=event.reply_token,
+                        messages=[
+                            TextMessage(text=msg)
+                        ]
+                    )
+                )
 
             else:
                 msg = '対応してません'
